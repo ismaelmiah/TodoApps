@@ -8,6 +8,7 @@ namespace API.DataAccessLayer
     {
         void Add(TEntity entity);
         void Remove(TKey id);
+        void Remove(TEntity entity);
         void Edit(TEntity entityToUpdate);
         TEntity GetById(TKey id);
     }

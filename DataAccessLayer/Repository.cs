@@ -6,24 +6,39 @@ namespace API.DataAccessLayer
         where TEntity : class, IEntity<TKey>
         where TContext : DbContext
     {
+        protected TContext DbContext;
+        protected DbSet<TEntity> DbSet;
+
+        protected Repository(TContext context)
+        {
+            DbContext = context;
+            DbSet = DbContext.Set<TEntity>();
+        }
         public void Add(TEntity entity)
         {
-            throw new System.NotImplementedException();
+            DbSet.Add(entity);
         }
 
         public void Remove(TKey id)
         {
-            throw new System.NotImplementedException();
+            var entityToDelete = DbSet.Find(id);
+            Remove(entityToDelete);
+        }
+
+        public void Remove(TEntity entity)
+        {
+            DbSet.Remove(entity);
         }
 
         public void Edit(TEntity entityToUpdate)
         {
-            throw new System.NotImplementedException();
+            DbSet.Attach(entityToUpdate);
+            DbContext.Entry(entityToUpdate).State = EntityState.Modified;
         }
 
         public TEntity GetById(TKey id)
         {
-            throw new System.NotImplementedException();
+            return DbSet.Find(id);
         }
     }
 }
