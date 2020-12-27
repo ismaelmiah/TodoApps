@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.DataAccessLayer
 {
@@ -39,6 +41,11 @@ namespace API.DataAccessLayer
         public TEntity GetById(TKey id)
         {
             return DbSet.Find(id);
+        }
+        public virtual IList<TEntity> GetAll()
+        {
+            IQueryable<TEntity> query = DbSet;
+            return query.ToList();
         }
     }
 }

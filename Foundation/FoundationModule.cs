@@ -1,5 +1,7 @@
 ﻿using API.Foundation.Contexts;
 using API.Foundation.Repositories;
+using API.Foundation.Services;
+using API.Foundation.UnitOfWorks;
 using Autofac;
 
 namespace API.Foundation
@@ -24,6 +26,11 @@ namespace API.Foundation
 
 
             builder.RegisterType<TodoItemRepos>().As<ITodoItemRepos>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<TodoSqlUnitOfWork>().As<ITodoSqlUnitOfWork>()
+                .InstancePerLifetimeScope();
+            builder.RegisterType<TodoServices>().As<ITodoServices>()
                 .InstancePerLifetimeScope();
 
             base.Load(builder);

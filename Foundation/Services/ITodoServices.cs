@@ -1,4 +1,5 @@
-﻿using API.Foundation.Entities;
+﻿using System.Collections.Generic;
+using API.Foundation.Entities;
 
 namespace API.Foundation.Services
 {
@@ -6,7 +7,8 @@ namespace API.Foundation.Services
     {
         void AddTodo(TodoItem item);
         void RemoveTodo(int id);
-        void EditTodo(TodoItem item);
+        void EditTodo(int id, TodoItem item);
         TodoItem GetItem(int id);
+        IList<TodoItem> GetAllItems();
     }
 }

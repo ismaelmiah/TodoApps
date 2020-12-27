@@ -38,9 +38,8 @@ namespace API.Todo
         {
             var (connectionString, migrationAssemblyName) = ConnectionAndMigration();
 
-            //builder.RegisterModule(new WebModule(connectionString, migrationAssemblyName));
+            builder.RegisterModule(new ApiModule(connectionString, migrationAssemblyName));
             builder.RegisterModule(new FoundationModule(connectionString, migrationAssemblyName));
-            //builder.RegisterModule(new MembershipModule(connectionString, migrationAssemblyName));
         }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)

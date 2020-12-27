@@ -1,4 +1,5 @@
-﻿using API.Foundation.Entities;
+﻿using System.Collections.Generic;
+using API.Foundation.Entities;
 using API.Foundation.UnitOfWorks;
 
 namespace API.Foundation.Services
@@ -21,14 +22,22 @@ namespace API.Foundation.Services
             _todoContext.TodoItemRepos.Remove(id);
         }
 
-        public void EditTodo(TodoItem item)
+        public void EditTodo(int id, TodoItem item)
         {
-            _todoContext.TodoItemRepos.Edit(item);
+            var exits = _todoContext.TodoItemRepos.GetById(id);
+            exits.Title = item.Title;
+            exits.DateTime = item.DateTime;
+            _todoContext.TodoItemRepos.Edit(exits);
         }
 
         public TodoItem GetItem(int id)
         {
             return _todoContext.TodoItemRepos.GetById(id);
+        }
+
+        public IList<TodoItem> GetAllItems()
+        {
+            return _todoContext.TodoItemRepos.GetAll();
         }
     }
 }

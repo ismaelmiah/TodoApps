@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using API.Foundation.Entities;
 using API.Foundation.Services;
 using Autofac;
+using System.Linq;
 
 namespace API.Todo.Models
 {
@@ -32,11 +34,22 @@ namespace API.Todo.Models
         {
             Services.RemoveTodo(id);
         }
-        public TodoItem Get(int id)
+        public TodoItemModel Get(int id)
         {
-            return Services.GetItem(id);
+            var data = Services.GetItem(id);
+            return EntityToModel(data);
         }
 
+        public IEnumerable<TodoItemModel> GetAll()
+        {
+            var data = Services.GetAllItems();
+            var newList = from x in data select new TodoItemModel();
+            return newList;
+        }
+        public void Update(int id, TodoItemModel model)
+        {
+            Services.EditTodo(id, ModelToEntity(model));
+        }
         private static TodoItem ModelToEntity(TodoItemModel model)
         {
             return new TodoItem()
@@ -45,6 +58,21 @@ namespace API.Todo.Models
                 Title = model.Title,
                 DateTime = model.DateTime
             };
+        }
+
+        private static TodoItemModel EntityToModel(TodoItem model)
+        {
+            return new TodoItemModel()
+            {
+                Id = model.Id,
+                Title = model.Title,
+                DateTime = model.DateTime
+            };
+        }
+
+        public bool Exits(int id)
+        {
+            return true;
         }
     }
 }
