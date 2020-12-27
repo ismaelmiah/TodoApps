@@ -1,4 +1,5 @@
 ﻿using API.Foundation.Contexts;
+using API.Foundation.Repositories;
 using Autofac;
 
 namespace API.Foundation
@@ -20,8 +21,11 @@ namespace API.Foundation
                 .WithParameter("connectionString", _connectionString)
                 .WithParameter("migrationAssemblyName", _migrationAssemblyName)
                 .InstancePerLifetimeScope();
-            
-            
+
+
+            builder.RegisterType<TodoItemRepos>().As<ITodoItemRepos>()
+                .InstancePerLifetimeScope();
+
             base.Load(builder);
         }
     }
