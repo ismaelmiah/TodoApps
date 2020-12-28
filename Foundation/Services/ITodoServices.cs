@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using API.Foundation.Entities;
 
 namespace API.Foundation.Services
 {
     public interface ITodoServices
     {
-        void AddTodo(TodoItem item);
-        void RemoveTodo(int id);
-        void EditTodo(int id, TodoItem item);
-        TodoItem GetItem(int id);
-        IList<TodoItem> GetAllItems();
+        Task<TodoItem> AddTodo(TodoItem item);
+        Task RemoveTodo(int id);
+        Task EditTodo(int id, TodoItem item);
+        Task<TodoItem> GetItem(int id);
+        Task<IList<TodoItem>> GetAllItems();
     }
 }

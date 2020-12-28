@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.DataAccessLayer
@@ -11,7 +12,7 @@ namespace API.DataAccessLayer
         void Remove(TKey id);
         void Remove(TEntity entity);
         void Edit(TEntity entityToUpdate);
-        TEntity GetById(TKey id);
-        IList<TEntity> GetAll();
+        Task<TEntity> GetById(TKey id);
+        Task<IList<TEntity>> GetAll();
     }
 }

@@ -4,6 +4,7 @@ using API.Foundation.Entities;
 using API.Foundation.Services;
 using Autofac;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace API.Todo.Models
 {
@@ -25,32 +26,33 @@ namespace API.Todo.Models
         public string Title { get; set; }
         public DateTime DateTime { get; set; }
 
-        public void Add(TodoItemModel model)
+        public async Task<TodoItemModel> Add(TodoItemModel model)
         {
-            Services.AddTodo(ModelToEntity(model));
-        }
-
-        public void Remove(int id)
-        {
-            Services.RemoveTodo(id);
-        }
-        public TodoItemModel Get(int id)
-        {
-            var data = Services.GetItem(id);
+            var data = await Services.AddTodo(ModelToEntity(model));
             return EntityToModel(data);
         }
 
-        public IEnumerable<TodoItemModel> GetAll()
+        public async Task Remove(int id)
         {
-            var data = Services.GetAllItems();
-            var newList = from x in data select new TodoItemModel();
+            await Services.RemoveTodo(id);
+        }
+        public async Task<TodoItemModel> Get(int id)
+        {
+            var data =await Services.GetItem(id);
+            return data==null?null:EntityToModel(data);
+        }
+
+        public async Task<IEnumerable<TodoItemModel>> GetAll()
+        {
+            var data = await Services.GetAllItems();
+            var newList = from x in data select EntityToModel(x);
             return newList;
         }
-        public void Update(int id, TodoItemModel model)
+        public async Task Update(int id, TodoItemModel model)
         {
-            Services.EditTodo(id, ModelToEntity(model));
+            await Services.EditTodo(id, ModelToEntity(model));
         }
-        private static TodoItem ModelToEntity(TodoItemModel model)
+        public TodoItem ModelToEntity(TodoItemModel model)
         {
             return new TodoItem()
             {

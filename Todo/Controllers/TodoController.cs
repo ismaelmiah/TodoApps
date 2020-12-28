@@ -14,33 +14,36 @@ namespace API.Todo.Controllers
     {
         // GET: api/<TodoController>
         [HttpGet]
-        public IEnumerable<TodoItemModel> Get()
+        public async Task<IEnumerable<TodoItemModel>> Get()
         {
-            return new TodoItemModel().GetAll();
+            var model = new TodoItemModel();
+            var data = await model.GetAll();
+            return data;
         }
 
         // GET api/<TodoController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItemModel>> Get(int id)
         {
-            var todoItem = new TodoItemModel().Get(id);
-             if (todoItem == null)
-             {
-                 return NotFound();
-             }
+            var model = new TodoItemModel();
+            var todoItem = await model.Get(id);
+            if (todoItem == null)
+            {
+                return NotFound();
+            }
 
-             return todoItem;
+            return todoItem;
         }
 
-        // POST api/<TodoController>
+        //POST api/<TodoController>
         [HttpPost]
         public async Task<ActionResult<TodoItemModel>> Post(TodoItemModel item)
         {
-            item.Add(item);
-            return CreatedAtAction(nameof(Get), new {id = item.Id});
+            var data = await item.Add(item);
+            return CreatedAtAction(nameof(Get), new {id = data.Id}, data);
         }
 
-        // PUT api/<TodoController>/5
+        //PUT api/<TodoController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, TodoItemModel item)
         {
@@ -49,16 +52,15 @@ namespace API.Todo.Controllers
                 return BadRequest();
             }
 
-
-            var todoItem = item.Get(id);
+            var todoItem = await item.Get(id);
             if (todoItem == null)
             {
                 return NotFound();
             }
-            
+
             try
             {
-                item.Update(id, item);
+                await item.Update(id, item);
             }
             catch (DbUpdateConcurrencyException) when (!item.Exits(id))
             {
@@ -73,13 +75,13 @@ namespace API.Todo.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var model = new TodoItemModel();
-            var todoItem = model.Get(id);
+            var todoItem = await model.Get(id);
 
             if (todoItem == null)
             {
                 return NotFound();
             }
-            model.Remove(id);
+            await model.Remove(id);
             return NoContent();
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using API.Foundation.Entities;
 using API.Foundation.UnitOfWorks;
 
@@ -12,32 +13,36 @@ namespace API.Foundation.Services
             _todoContext = todoContext;
         }
 
-        public void AddTodo(TodoItem item)
+        public async Task<TodoItem> AddTodo(TodoItem item)
         {
             _todoContext.TodoItemRepos.Add(item);
+            await _todoContext.Save();
+            return item;
         }
 
-        public void RemoveTodo(int id)
+        public async Task RemoveTodo(int id)
         {
             _todoContext.TodoItemRepos.Remove(id);
+            await _todoContext.Save();
         }
 
-        public void EditTodo(int id, TodoItem item)
+        public async Task EditTodo(int id, TodoItem item)
         {
-            var exits = _todoContext.TodoItemRepos.GetById(id);
+            var exits = await _todoContext.TodoItemRepos.GetById(id);
             exits.Title = item.Title;
             exits.DateTime = item.DateTime;
             _todoContext.TodoItemRepos.Edit(exits);
+            await _todoContext.Save();
         }
 
-        public TodoItem GetItem(int id)
+        public async Task<TodoItem> GetItem(int id)
         {
-            return _todoContext.TodoItemRepos.GetById(id);
+            return await _todoContext.TodoItemRepos.GetById(id);
         }
 
-        public IList<TodoItem> GetAllItems()
+        public async Task<IList<TodoItem>> GetAllItems()
         {
-            return _todoContext.TodoItemRepos.GetAll();
+            return await _todoContext.TodoItemRepos.GetAll();
         }
     }
 }

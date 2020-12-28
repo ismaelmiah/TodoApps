@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.DataAccessLayer
@@ -11,7 +12,7 @@ namespace API.DataAccessLayer
         protected TContext DbContext;
         protected DbSet<TEntity> DbSet;
 
-        protected Repository(TContext context)
+        public Repository(TContext context)
         {
             DbContext = context;
             DbSet = DbContext.Set<TEntity>();
@@ -38,14 +39,14 @@ namespace API.DataAccessLayer
             DbContext.Entry(entityToUpdate).State = EntityState.Modified;
         }
 
-        public TEntity GetById(TKey id)
+        public async Task<TEntity> GetById(TKey id)
         {
-            return DbSet.Find(id);
+            return await DbSet.FindAsync(id);
         }
-        public virtual IList<TEntity> GetAll()
+        public virtual async Task<IList<TEntity>> GetAll()
         {
             IQueryable<TEntity> query = DbSet;
-            return query.ToList();
+            return await query.ToListAsync();
         }
     }
 }

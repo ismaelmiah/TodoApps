@@ -27,7 +27,6 @@ namespace API.Foundation
 
             builder.RegisterType<TodoItemRepos>().As<ITodoItemRepos>()
                 .InstancePerLifetimeScope();
-
             builder.RegisterType<TodoSqlUnitOfWork>().As<ITodoSqlUnitOfWork>()
                 .InstancePerLifetimeScope();
             builder.RegisterType<TodoServices>().As<ITodoServices>()
