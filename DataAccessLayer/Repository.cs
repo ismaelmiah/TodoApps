@@ -35,7 +35,7 @@ namespace API.DataAccessLayer
 
         private void CassandraAdded(TEntity entity)
         {
-            var (title, id, dateTime) = GetNewCassandraId(entity);
+            var (title, id, dateTime) = GenerateCassandraData(entity);
 
             var statement = new SimpleStatement("INSERT INTO todoitems (id, title, datetime) VALUES (?,?,?)",
                 id, title, dateTime);
@@ -79,14 +79,23 @@ namespace API.DataAccessLayer
             session = Cluster.Connect("tododb");
 
             var properties = entity.GetType().GetProperties();
-            var id = properties[0].GetValue(entity).ToString();
+            var id = int.Parse(properties[0].GetValue(entity).ToString());
             var title = properties[1].GetValue(entity).ToString();
-            var dateTime = new LocalDate(2018, 04, 01);
+            var date = Convert.ToDateTime(properties[2].GetValue(entity).ToString());
+            var dateTime = ToLocalDate(date);
 
             var statement = new SimpleStatement("UPDATE todoitems SET title =?, datetime =? WHERE id = ?", title,dateTime,id);
 
-            session.Execute(statement);
-            session.Dispose();
+            try
+            {
+                session.Execute(statement);
+                session.Dispose();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public async Task<TEntity> GetById(TKey id)
@@ -99,13 +108,16 @@ namespace API.DataAccessLayer
             return await query.ToListAsync();
         }
 
-        private (string Title, int id, LocalDate date) GetNewCassandraId(TEntity entity)
+        public static LocalDate ToLocalDate(DateTime dateTime) => new LocalDate(dateTime.Year, dateTime.Month, dateTime.Day);
+
+        private (string Title, int id, LocalDate date) GenerateCassandraData(TEntity entity)
         {
             session = Cluster.Connect("tododb");
 
             var properties = entity.GetType().GetProperties();
             var title = properties[1].GetValue(entity).ToString();
-            var dateTime = new LocalDate(2018, 04, 01);
+            var date = Convert.ToDateTime(properties[2].GetValue(entity).ToString());
+            var dateTime = ToLocalDate(date);
 
             var statement = new SimpleStatement("SELECT id FROM todoitems");
 
@@ -121,9 +133,9 @@ namespace API.DataAccessLayer
             session = Cluster.Connect("tododb");
 
             var properties = entity.GetType().GetProperties();
-            var id = properties[0].GetValue(entity).ToString();
+            var id = int.Parse(properties[0].GetValue(entity).ToString());
 
-            var statement = new SimpleStatement($"DELETE FROM todoitems where id = ?", id);
+            var statement = new SimpleStatement("DELETE FROM todoitems where id = ?", id);
             try
             {
                 session.Execute(statement);
