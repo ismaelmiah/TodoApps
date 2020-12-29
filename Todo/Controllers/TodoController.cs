@@ -43,6 +43,33 @@ namespace API.Todo.Controllers
             return CreatedAtAction(nameof(Get), new {id = data.Id}, data);
         }
 
+        //POST api/<TodoController>
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<TodoItemModel>> Patch(int id, TodoItemModel item)
+        {
+            if (id != item.Id)
+            {
+                return BadRequest();
+            }
+
+            var todoItem = await item.Get(id);
+            if (todoItem == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                await item.Update(id, item);
+            }
+            catch (DbUpdateConcurrencyException) when (!item.Exits(id))
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
         //PUT api/<TodoController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, TodoItemModel item)
