@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.Foundation.Entities;
 using API.Foundation.UnitOfWorks;
+using Cassandra;
+using Cassandra.Data.Linq;
 
 namespace API.Foundation.Services
 {
@@ -26,11 +30,18 @@ namespace API.Foundation.Services
             await _todoContext.Save();
         }
 
-        public async Task EditTodo(int id, TodoItem item)
+        public async Task EditTodo(int id, TodoItem item, bool datetime)
         {
             var exits = await _todoContext.TodoItemRepos.GetById(id);
-            exits.Title = item.Title;
-            exits.DateTime = item.DateTime;
+            if (datetime)
+            {
+                exits.DateTime = item.DateTime;
+            }
+            else
+            {
+                exits.DateTime = item.DateTime;
+                exits.Title = item.Title;
+            }
             _todoContext.TodoItemRepos.Edit(exits);
             await _todoContext.Save();
         }
@@ -43,6 +54,19 @@ namespace API.Foundation.Services
         public async Task<IList<TodoItem>> GetAllItems()
         {
             return await _todoContext.TodoItemRepos.GetAll();
+        }
+
+        public IList<TodoItem> GetByDate(DateTime filterDateTime)
+        {
+            var cassandraList =  _todoContext.TodoItemRepos.GetAllByDate(filterDateTime);
+            var originalData = from x in cassandraList
+                select new TodoItem
+                {
+                    Id = x.Item1,
+                    Title = x.Item2,
+                    DateTime = x.Item3
+                };
+            return originalData.ToList();
         }
     }
 }

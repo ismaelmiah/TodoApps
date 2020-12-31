@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Serialization;
 
 namespace API.Todo
 {
@@ -50,9 +51,11 @@ namespace API.Todo
                 options.UseSqlServer(connectionString, m 
                     => m.MigrationsAssembly(migrationAssemblyName)));
             
-            services.AddControllers();
-        }
+            services.AddControllers().AddNewtonsoftJson(opt => {
+                opt.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            });
 
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

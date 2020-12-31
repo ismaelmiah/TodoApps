@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Cassandra;
+using Cassandra.Data.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.DataAccessLayer
@@ -28,12 +30,13 @@ namespace API.DataAccessLayer
         //ISession session = cluster.Connect("demo");
         public void Add(TEntity entity)
         {
-            DbSet.Add(entity);
-
-            CassandraAdded(entity);
+            if (CassandraAdded(entity))
+            {
+                DbSet.Add(entity);
+            }
         }
 
-        private void CassandraAdded(TEntity entity)
+        private bool CassandraAdded(TEntity entity)
         {
             var (title, id, dateTime) = GenerateCassandraData(entity);
 
@@ -45,11 +48,11 @@ namespace API.DataAccessLayer
                 session = Cluster.Connect("tododb");
                 session.Execute(statement);
                 session.Dispose();
+                return true;
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception);
-                throw new InvalidDataContractException();
+                return false;
             }
         }
 
@@ -61,20 +64,22 @@ namespace API.DataAccessLayer
 
         public void Remove(TEntity entity)
         {
-            DbSet.Remove(entity);
-
-            RemovedCassandra(entity);
+            if (RemovedCassandra(entity))
+            {
+                DbSet.Remove(entity);
+            }
         }
         
         public void Edit(TEntity entityToUpdate)
         {
-            DbSet.Attach(entityToUpdate);
-            DbContext.Entry(entityToUpdate).State = EntityState.Modified;
-
-            CassandraUpdate(entityToUpdate);
+            if (CassandraUpdate(entityToUpdate))
+            {
+                DbSet.Attach(entityToUpdate);
+                DbContext.Entry(entityToUpdate).State = EntityState.Modified;
+            }
         }
 
-        private void CassandraUpdate(TEntity entity)
+        private bool CassandraUpdate(TEntity entity)
         {
             session = Cluster.Connect("tododb");
 
@@ -90,11 +95,11 @@ namespace API.DataAccessLayer
             {
                 session.Execute(statement);
                 session.Dispose();
+                return true;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                return false;
             }
         }
 
@@ -108,6 +113,22 @@ namespace API.DataAccessLayer
             return await query.ToListAsync();
         }
 
+        public List<Tuple<int, string, DateTime>> GetAllByDate(DateTime dateTime)
+        {
+            session = Cluster.Connect("tododb");
+            var date = ToLocalDate(dateTime);
+            var statement = new SimpleStatement("SELECT * FROM todoitems where datetime = ? allow filtering", date);
+            var results = session.Execute(statement);
+
+            var tupleList = (from result in results let localdate = result
+                    .GetValue<LocalDate>("datetime").ToString()
+                             select new Tuple<int, string, DateTime>
+                                 (result.GetValue<int>("id"),
+                                 result.GetValue<string>("title"),
+                                 Convert.ToDateTime(localdate))).ToList();
+
+            return tupleList;
+        }
         public static LocalDate ToLocalDate(DateTime dateTime) => new LocalDate(dateTime.Year, dateTime.Month, dateTime.Day);
 
         private (string Title, int id, LocalDate date) GenerateCassandraData(TEntity entity)
@@ -128,7 +149,7 @@ namespace API.DataAccessLayer
             return (title, id, dateTime);
         }
 
-        private void RemovedCassandra(TEntity entity)
+        private bool RemovedCassandra(TEntity entity)
         {
             session = Cluster.Connect("tododb");
 
@@ -140,10 +161,11 @@ namespace API.DataAccessLayer
             {
                 session.Execute(statement);
                 session.Dispose();
+                return true;
             }
             catch
             {
-                throw new DBConcurrencyException();
+                return false;
             }
         }
     }

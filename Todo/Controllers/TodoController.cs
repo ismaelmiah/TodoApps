@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Todo.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace API.Todo.Controllers
 {
@@ -12,8 +12,17 @@ namespace API.Todo.Controllers
     [ApiController]
     public class TodoController : ControllerBase
     {
-        // GET: api/<TodoController>
-        [HttpGet]
+        
+        
+        [HttpGet] //ok. 
+        public IEnumerable<TodoItemModel> FilteredByDate([FromQuery] DateTime datetime)
+        {
+            var model = new TodoItemModel();
+            var data =  model.GetByDate(datetime);
+            return data;
+        }
+
+        [HttpGet("all")]
         public async Task<IEnumerable<TodoItemModel>> Get()
         {
             var model = new TodoItemModel();
@@ -21,7 +30,6 @@ namespace API.Todo.Controllers
             return data;
         }
 
-        // GET api/<TodoController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItemModel>> Get(int id)
         {
@@ -34,43 +42,37 @@ namespace API.Todo.Controllers
 
             return todoItem;
         }
-
-        //POST api/<TodoController>
+        
         [HttpPost]
         public async Task<ActionResult<TodoItemModel>> Post(TodoItemModel item)
         {
             var data = await item.Add(item);
             return CreatedAtAction(nameof(Get), new {id = data.Id}, data);
         }
-
-        //POST api/<TodoController>
+        
         [HttpPatch("{id}")]
-        public async Task<ActionResult<TodoItemModel>> Patch(int id, TodoItemModel item)
+        public async Task<IActionResult> Patch(int id, JsonPatchDocument<TodoItemModel> patchDoc)
         {
-            if (id != item.Id)
-            {
-                return BadRequest();
-            }
-
-            var todoItem = await item.Get(id);
+            var model = new TodoItemModel();
+            patchDoc.ApplyTo(model, ModelState);
+            var todoItem = await model.Get(id);
             if (todoItem == null)
             {
                 return NotFound();
             }
-
+            
             try
             {
-                await item.Update(id, item);
+                await model.PatchConfigure(id, model);
             }
-            catch (DbUpdateConcurrencyException) when (!item.Exits(id))
+            catch (DbUpdateConcurrencyException) when (!model.Exits(id))
             {
                 return NotFound();
             }
 
             return NoContent();
         }
-
-        //PUT api/<TodoController>/5
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, TodoItemModel item)
         {
@@ -96,8 +98,7 @@ namespace API.Todo.Controllers
 
             return NoContent();
         }
-
-        // DELETE api/<TodoController>/5
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

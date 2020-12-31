@@ -4,6 +4,7 @@ using API.Foundation.Entities;
 using API.Foundation.Services;
 using Autofac;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace API.Todo.Models
@@ -36,12 +37,30 @@ namespace API.Todo.Models
         {
             await Services.RemoveTodo(id);
         }
+
+        public  IEnumerable<TodoItemModel> GetByDate(DateTime dateTime)
+        {
+            var data =  Services.GetByDate(dateTime);
+            var sendModels = from x in data
+                             select new TodoItemModel
+                             {
+                                 Id = x.Id,
+                                 Title = x.Title,
+                                 DateTime = x.DateTime
+                             };
+
+            return sendModels;
+        }
         public async Task<TodoItemModel> Get(int id)
         {
-            var data =await Services.GetItem(id);
-            return data==null?null:EntityToModel(data);
+            var data = await Services.GetItem(id);
+            return data == null ? null : EntityToModel(data);
         }
 
+        public async Task PatchConfigure(int id, TodoItemModel model)
+        {
+            await Services.EditTodo(id, ModelToEntity(model), true);
+        }
         public async Task<IEnumerable<TodoItemModel>> GetAll()
         {
             var data = await Services.GetAllItems();
@@ -50,7 +69,7 @@ namespace API.Todo.Models
         }
         public async Task Update(int id, TodoItemModel model)
         {
-            await Services.EditTodo(id, ModelToEntity(model));
+            await Services.EditTodo(id, ModelToEntity(model), false);
         }
         public TodoItem ModelToEntity(TodoItemModel model)
         {
