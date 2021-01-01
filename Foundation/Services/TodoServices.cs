@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Foundation.Entities;
 using API.Foundation.UnitOfWorks;
-using Cassandra;
-using Cassandra.Data.Linq;
 
 namespace API.Foundation.Services
 {

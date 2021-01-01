@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.Todo.Models;
 using Microsoft.AspNetCore.JsonPatch;
@@ -14,12 +15,12 @@ namespace API.Todo.Controllers
     {
         
         
-        [HttpGet] //ok. 
+        [HttpGet]
         public IEnumerable<TodoItemModel> FilteredByDate([FromQuery] DateTime datetime)
         {
             var model = new TodoItemModel();
             var data =  model.GetByDate(datetime);
-            return data;
+            return data.OrderBy(x=>x.Title);
         }
 
         [HttpGet("all")]

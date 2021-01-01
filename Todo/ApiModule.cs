@@ -5,13 +5,13 @@ namespace API.Todo
 {
     public class ApiModule : Module
     {
-        private readonly string _connectionString;
-        private readonly string _migrationAssemblyName;
+        internal string ConnectionString { get; }
+        internal string MigrationAssemblyName { get; }
 
         public ApiModule(string connectionString, string migrationAssemblyName)
         {
-            _connectionString = connectionString;
-            _migrationAssemblyName = migrationAssemblyName;
+            ConnectionString = connectionString;
+            MigrationAssemblyName = migrationAssemblyName;
         }
         protected override void Load(ContainerBuilder builder)
         {

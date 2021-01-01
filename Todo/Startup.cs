@@ -1,5 +1,6 @@
 using API.Foundation;
 using API.Foundation.Contexts;
+using API.Todo.Middleware;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
@@ -68,7 +69,7 @@ namespace API.Todo
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseMiddleware<RequestMiddleware>();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

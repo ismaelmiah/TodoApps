@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Cassandra;
-using Cassandra.Data.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.DataAccessLayer
@@ -18,7 +14,7 @@ namespace API.DataAccessLayer
         protected TContext DbContext;
         protected DbSet<TEntity> DbSet;
         protected Cluster Cluster;
-        protected ISession session;
+        protected ISession Session;
         public Repository(TContext context)
         {
             DbContext = context;
@@ -45,13 +41,14 @@ namespace API.DataAccessLayer
 
             try
             {
-                session = Cluster.Connect("tododb");
-                session.Execute(statement);
-                session.Dispose();
+                Session = Cluster.Connect("tododb");
+                Session.Execute(statement);
+                Session.Dispose();
                 return true;
             }
             catch (Exception exception)
             {
+                Console.WriteLine(exception);
                 return false;
             }
         }
@@ -59,14 +56,9 @@ namespace API.DataAccessLayer
         public void Remove(TKey id)
         {
             var entityToDelete = DbSet.Find(id);
-            Remove(entityToDelete);
-        }
-
-        public void Remove(TEntity entity)
-        {
-            if (RemovedCassandra(entity))
+            if (RemovedCassandra(entityToDelete))
             {
-                DbSet.Remove(entity);
+                DbSet.Remove(entityToDelete);
             }
         }
         
@@ -81,7 +73,7 @@ namespace API.DataAccessLayer
 
         private bool CassandraUpdate(TEntity entity)
         {
-            session = Cluster.Connect("tododb");
+            Session = Cluster.Connect("tododb");
 
             var properties = entity.GetType().GetProperties();
             var id = int.Parse(properties[0].GetValue(entity).ToString());
@@ -93,12 +85,13 @@ namespace API.DataAccessLayer
 
             try
             {
-                session.Execute(statement);
-                session.Dispose();
+                Session.Execute(statement);
+                Session.Dispose();
                 return true;
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 return false;
             }
         }
@@ -115,10 +108,10 @@ namespace API.DataAccessLayer
 
         public List<Tuple<int, string, DateTime>> GetAllByDate(DateTime dateTime)
         {
-            session = Cluster.Connect("tododb");
+            Session = Cluster.Connect("tododb");
             var date = ToLocalDate(dateTime);
             var statement = new SimpleStatement("SELECT * FROM todoitems where datetime = ? allow filtering", date);
-            var results = session.Execute(statement);
+            var results = Session.Execute(statement);
 
             var tupleList = (from result in results let localdate = result
                     .GetValue<LocalDate>("datetime").ToString()
@@ -133,7 +126,7 @@ namespace API.DataAccessLayer
 
         private (string Title, int id, LocalDate date) GenerateCassandraData(TEntity entity)
         {
-            session = Cluster.Connect("tododb");
+            Session = Cluster.Connect("tododb");
 
             var properties = entity.GetType().GetProperties();
             var title = properties[1].GetValue(entity).ToString();
@@ -142,16 +135,16 @@ namespace API.DataAccessLayer
 
             var statement = new SimpleStatement("SELECT id FROM todoitems");
 
-            var results = session.Execute(statement);
+            var results = Session.Execute(statement);
             var id = results.Select(result => result.GetValue<int>("id")).Prepend(0).Max();
-            session.Dispose();
+            Session.Dispose();
             id++;
             return (title, id, dateTime);
         }
 
         private bool RemovedCassandra(TEntity entity)
         {
-            session = Cluster.Connect("tododb");
+            Session = Cluster.Connect("tododb");
 
             var properties = entity.GetType().GetProperties();
             var id = int.Parse(properties[0].GetValue(entity).ToString());
@@ -159,8 +152,8 @@ namespace API.DataAccessLayer
             var statement = new SimpleStatement("DELETE FROM todoitems where id = ?", id);
             try
             {
-                session.Execute(statement);
-                session.Dispose();
+                Session.Execute(statement);
+                Session.Dispose();
                 return true;
             }
             catch

@@ -4,7 +4,6 @@ using API.Foundation.Entities;
 using API.Foundation.Services;
 using Autofac;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace API.Todo.Models
