@@ -15,8 +15,9 @@ namespace API.Todo.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            Log.Information($"{context.Request.Method} - {context.Request.Path}");
+            Log.Information($"Request Arrive - {context.Request.Method} - {context.Request.Path}");
             await _next(context);
+            Log.Information($"Request Leave - {context.Request.Method} - {context.Request.Path}");
         }
     }
 }
