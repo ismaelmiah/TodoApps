@@ -181,7 +181,7 @@ Project Link: [https://github.com/ismail5g/TodoApps](https://github.com/ismail5g
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/ismail5g/Best-README-Template.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/ismail5g/TodoApps.svg?style=for-the-badge
 [contributors-url]: https://github.com/ismail5g/TodoApps/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/ismail5g/TodoApps.svg?style=for-the-badge
 [forks-url]: https://github.com/ismail5g/TodoApps/network/members
