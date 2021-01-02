@@ -1,5 +1,5 @@
-<h1 align="center">Awesome README Templates</h1>
-<p align="center"><i>A collection of awesome readme templates to display on your github profile.</i></p>
+<h1 align="center">Simple Asp .Net Core 3.1 Web API</h1>
+<p align="center"><i>A collection of API For TODO APPS.</i></p>
 <div align="center">
 <a href="https://github.com/ismail5g/TodoApps/stargazers"><img src="https://img.shields.io/github/stars/ismail5g/TodoApps" alt="Stars Badge"/></a>
 <a href="https://github.com/ismail5g/TodoApps/network/members"><img src="https://img.shields.io/github/forks/ismail5g/TodoApps" alt="Forks Badge"/></a>
@@ -9,70 +9,71 @@
 <a href="https://github.com/ismail5g/TodoApps/blob/main/LICENSE.txt"><img src="https://img.shields.io/github/license/ismail5g/TodoApps?color=2b9348" alt="License Badge"/></a>
 </div>
 <br>
-<p align="center"><i>Loved the project? Please visit our <a href="https://awesome-github-readme-profile.netlify.app">Website</a></i></p>
-<br>
-This repo aims to collect the all `awesome beautiful READMEs profile` and make your Profile look good & Inspire other's.
+<h4> This project was build for learning purpose on Web API, Anyone who learning WEB API can get benifited by 3n architecture funcationaly from this project.<h4>
 
-If you are intersted, will create a PR for to add your `README` profile here.
-
+## I'm Describe below how this API works
 If you like this Repo, Please click the :star:
 
-List of `awesome README Profile` categories mentioned below
 
-## Contents
-  - [Github README PROFILE CATEGORY](#github-readme-profile-category)
-  - [List out `Awesome README Profile` Tools](#list-out-awesome-readme-profile-tools)
-  - [List out `Awesome README Profile` Articles](#list-out-awesome-readme-profile-articles)
-  - [Contribute](#contribute)
+## Design Pattern
+  - [Repository Pattern](#Repository Pattern)
+  - [Unit Of Work](#Unit Of Work)
 
-## Website
-
-Link : https://awesome-github-readme-profile.netlify.app
-
-<a href="https://awesome-github-readme-profile.netlify.app"><img src="https://raw.githubusercontent.com/elangosundar/awesome-README-templates/master/awesome-github-profile.png" alt="Awesome README Templates" /></a>
+## Database
+  - [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
+  - [Cassandra](https://cassandra.apache.org/)
+  
+# How To Use
 
 
 ## Github README PROFILE CATEGORY
 
-- [ ] [Art](art)
-- [ ] [Code Styled](code-styled)
-- [ ] [Creativity](creativity)
-- [ ] [Flowcharts](flowcharts)
-- [ ] [Default](default)
-- [ ] [Dynamic Realtime](dynamic-realtime)
-- [ ] [Elaborate](elaborate)
-- [ ] [Multimedia](multimedia)
-- [ ] [Short-and-sweet](short-and-sweet)
-- [ ] [Tabular](tabular)
-- [ ] [Pie Charts](pie-charts)
+- Clone this repo or Download as Zip
+- Open Project in Visual Studio Code/ Visual Studio 2019
+- Change DB ConnectionString in appsettings.json
+- [Make Migration And Update Database](https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli)
+- [Download Cassandra](https://phoenixnap.com/kb/install-cassandra-on-windows)
+- Make Cassandra Database by raw Code
+ ```
+ CREATE KEYSPACE TodoDB
+           WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'};
 
-# List out `Awesome README Profile` Tools
+ CREATE TABLE TodoDB.TodoItems (
+           Id int PRIMARY KEY,
+           Title text,
+           DateTime DATE);
+ ```
+- Start Cassandra followed by above Cassandra blog
 
-- [Profile Summary For Github](https://profile-summary-for-github.com/search)
-- [Github Readme Stats](https://github.com/anuraghazra/github-readme-stats) - Dynamically generated stats for your github readmes
-- [Profile Activity Generator](https://github.com/omidnikrah/profile-activity-generator) - Generate custom profile activity for your profile README
-- [All Dev Stats in Readme](https://github.com/anmol098/waka-readme-stats) - Are you an early 🐤 or a night 🦉? When are you most productive during the day? What languages you code in? And other stuff... Let's check out in your readme!
-- [Visitor Badge](https://visitor-badge.glitch.me/#docs) - Count visitors for your README.md, Issues, PRs in GitHub
-- [1990s style Visitor Counter](https://twitter.com/ryanlanciaux/status/1283755637126705152) - Add a 1990s style visitor counter with one line of markdown.
-- [Vists Count](https://pufler.dev/git-badges/) - Count visitors for README.md that can be used with shields.io
-- [Shields Project](https://shields.io/) - Use Shields to create profile badges, compatible with Simple Icons
-- [Simple Icons](https://github.com/simple-icons/simple-icons#cdn-usage) - SVG icons for popular brands for your README.md files
-- [Laravel GitHub Profile Visit Counter](https://github.com/caneco/laravel-github-profile-view-counter) - Add on your Laravel project a quick-badge to count your profile visits.
-- [Dev Metrics in Readme](https://github.com/athul/waka-readme) - [WakaTime](https://wakatime.com/) Weekly Metrics on your Profile Readme
-- [Current UTC time](https://github.com/jojoee/jojoee) - Example code of server that can serve dynamic content on GitHub profile
-- [Github Activity in README](https://github.com/jamesgeorge007/github-activity-readme) - Updates `README.md` with the recent GitHub activity of a user
-- [Github Profile README Generator](https://github.com/rahuldkjain/github-profile-readme-generator) - This tool provides an easy way to create github profile readme with latest addons like `visitors count`, `github stats` etc.
-- [Dynamic Profile Page On Github](https://github.com/umutphp/github-action-dynamic-profile-page) - Get dynamically generated list of your commits (of the repositories that the action is configured) on GitHub profile readme.
-- [npm package downloads](https://github.com/maddhruv/github-readme-npm-downloads) - Show all of your npm packages and their total downloads
-- [Feedparser](https://pythonhosted.org/feedparser/) - Convenient processing of RSS files
-- [Github Profile README Generator](https://github.com/arturssmirnovs/github-profile-readme-generator) - This project allows you to create nice and simple github profile readme files.
-- [Github Gist Count Generator](https://github.com/lifeparticle/Gist-Count) - Get gist count for your github readmes.
+## Test with POSTMAN
 
-# List out `Awesome README Profile` Articles
+![Screenshot_21](https://user-images.githubusercontent.com/29182508/103455239-af8f7b00-4d15-11eb-9407-3f7d3e056b53.png)
 
-# Contribute
+# List of `API` Actions
 
-Contributions are always welcome! Please create a PR to add Github Profile.
+- `http://localhost:5000/api/todo/all` - To Get All Todo Items (GET)
+- `http://localhost:5000/api/todo`     - To Create New Todo Item (POST)
+- `http://localhost:5000/api/todo/1`   - To Get Specific Todo Item Id's Detail (GET)
+- `http://localhost:5000/api/todo/1`   - To Update Specific Todo Item Id's Detail (PUT)
+- `http://localhost:5000/api/todo/2`   - To Update `datetime` Of specific Todo Items (PATCH)
+```
+eg:    
+{
+    "op": "replace",
+    "path": "/datetime",
+    "value": "2021-01-04"
+  }
+```
+- `http://localhost:5000/api/todo/2`   - To Delete specific Todo Item (DELETE)
+
+# If Any Problem to RUN
+
+
+[![LinkedIn][linkedin-shield]][linkedin-url]
+
+[linkedin-shield]: [https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555]
+[linkedin-url]: [https://linkedin.com/in/ismail5g]
+[LinkedIn]:[https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white]
 
 ## :pencil: License
 
