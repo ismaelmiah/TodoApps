@@ -19,14 +19,14 @@
   <p align="center">
     An awesome README template to jumpstart your projects!
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/ismail5g/TodoApps"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    <a href="https://github.com/ismail5g/TodoApps">View Demo</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
+    <a href="https://github.com/ismail5g/TodoApps/issues">Report Bug</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    <a href="https://github.com/ismail5g/TodoApps/issues">Request Feature</a>
   </p>
 </p>
 
@@ -129,7 +129,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/ismail5g/TodoApps/issues) for a list of proposed features (and known issues).
 
 
 
@@ -190,7 +190,7 @@ Project Link: [https://github.com/ismail5g/TodoApps](https://github.com/ismail5g
 [issues-shield]: https://img.shields.io/github/issues/ismail5g/TodoApps.svg?style=for-the-badge
 [issues-url]: https://github.com/ismail5g/TodoApps/issues
 [license-shield]: https://img.shields.io/github/license/ismail5g/TodoApps.svg?style=for-the-badge
-[license-url]: https://github.com/ismail5g/TodoApps/blob/master/LICENSE.txt
+[license-url]: https://github.com/ismail5g/TodoApps/blob/main/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/ismail5g
 [product-screenshot]: images/screenshot.png
