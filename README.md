@@ -1,7 +1,7 @@
 <h1 align="center">Awesome README Templates</h1>
 <p align="center"><i>A collection of awesome readme templates to display on your github profile.</i></p>
 <div align="center">
-  <a href="https://github.com/ismail5g/TodoApps/stargazers"><img src="https://img.shields.io/github/stars/ismail5g/TodoApps" alt="Stars Badge"/></a>
+<a href="https://github.com/ismail5g/TodoApps/stargazers"><img src="https://img.shields.io/github/stars/ismail5g/TodoApps" alt="Stars Badge"/></a>
 <a href="https://github.com/ismail5g/TodoApps/network/members"><img src="https://img.shields.io/github/forks/ismail5g/TodoApps" alt="Forks Badge"/></a>
 <a href="https://github.com/ismail5g/TodoApps/pulls"><img src="https://img.shields.io/github/issues-pr/ismail5g/TodoApps" alt="Pull Requests Badge"/></a>
 <a href="https://github.com/ismail5g/TodoApps/issues"><img src="https://img.shields.io/github/issues/ismail5g/TodoApps" alt="Issues Badge"/></a>
