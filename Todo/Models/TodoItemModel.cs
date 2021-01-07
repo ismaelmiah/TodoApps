@@ -32,9 +32,9 @@ namespace API.Todo.Models
             return EntityToModel(data);
         }
 
-        public async Task Remove(int id)
+        public void Remove(int id)
         {
-            await Services.RemoveTodo(id);
+            Services.RemoveTodo(id);
         }
 
         public  IEnumerable<TodoItemModel> GetByDate(DateTime dateTime)

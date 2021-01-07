@@ -18,12 +18,10 @@ namespace API.Foundation.Services
         public TodoItem AddTodo(TodoItem item)
         {
             _todoContext.TodoItemRepos.Add(item);
-            
-            var id = item.Id;
             return item;
         }
 
-        public async Task RemoveTodo(int id)
+        public void RemoveTodo(int id)
         {
             _todoContext.TodoItemRepos.Remove(id);
         }
@@ -55,13 +53,13 @@ namespace API.Foundation.Services
 
         public IList<TodoItem> GetByDate(DateTime filterDateTime)
         {
-            var cassandraList =  _todoContext.TodoItemRepos.GetAllByDate(filterDateTime.ToShortDateString());
+            var cassandraList =  _todoContext.TodoItemRepos.GetAllByDate(filterDateTime);
             var originalData = from x in cassandraList
                 select new TodoItem
                 {
                     Id = x.Item1,
                     Title = x.Item2,
-                    DateTime = x.Item3.DateTime
+                    DateTime = x.Item3
                 };
             return originalData.ToList();
         }

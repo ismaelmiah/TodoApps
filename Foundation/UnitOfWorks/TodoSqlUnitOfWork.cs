@@ -1,5 +1,4 @@
-﻿using API.DataAccessLayer;
-using API.Foundation.Contexts;
+﻿using API.Foundation.Contexts;
 using API.Foundation.Repositories;
 
 namespace API.Foundation.UnitOfWorks

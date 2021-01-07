@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using API.DataAccessLayer;
 using Cassandra;
 using Cassandra.Mapping.Attributes;
@@ -9,13 +8,11 @@ namespace API.Foundation.Entities
     public class TodoItem : IEntity<int>
     {
         [Column("id")]
-        [PartitionKey(0)]
+        [PartitionKey()]
         public int Id { get; set; }
         [Column("title")]
         public string Title { get; set; }
-        [Column("datetime")]
-        
-        [DataType(DataType.Date)]
+        [Column("datetime", Type = typeof(LocalDate))]
         public DateTime DateTime { get; set; }
     }
 }

@@ -110,7 +110,7 @@ namespace API.Todo.Controllers
             {
                 return NotFound();
             }
-            await model.Remove(id);
+            model.Remove(id);
             return NoContent();
         }
     }
