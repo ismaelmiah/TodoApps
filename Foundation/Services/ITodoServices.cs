@@ -7,8 +7,8 @@ namespace API.Foundation.Services
 {
     public interface ITodoServices
     {
-        Task<TodoItem> AddTodo(TodoItem item);
-        Task RemoveTodo(int id);
+        TodoItem AddTodo(TodoItem item);
+        void RemoveTodo(int id);
         Task EditTodo(int id, TodoItem item, bool datetime);
         Task<TodoItem> GetItem(int id);
         Task<IList<TodoItem>> GetAllItems();

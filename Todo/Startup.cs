@@ -51,6 +51,8 @@ namespace API.Todo
             services.AddDbContext<TodoContext>(options =>
                 options.UseSqlServer(connectionString, m 
                     => m.MigrationsAssembly(migrationAssemblyName)));
+
+            services.Configure<DataAccessLayer.Cassandra>(Configuration.GetSection("Cassandra"));
             
             services.AddControllers().AddNewtonsoftJson(opt => {
                 opt.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();

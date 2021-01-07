@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 
@@ -15,9 +16,9 @@ namespace API.Todo.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            Log.Information($"Request Arrive - {context.Request.Method} - {context.Request.Path}");
+            Log.Information($"Request Arrive Time - {DateTime.Now} - {context.Request.Method} - {context.Request.Path}");
             await _next(context);
-            Log.Information($"Request Leave - {context.Request.Method} - {context.Request.Path}");
+            Log.Information($"Request Leave Time - {DateTime.Now} - {context.Request.Method} - {context.Request.Path}");
         }
     }
 }

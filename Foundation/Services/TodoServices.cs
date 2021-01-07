@@ -15,17 +15,15 @@ namespace API.Foundation.Services
             _todoContext = todoContext;
         }
 
-        public async Task<TodoItem> AddTodo(TodoItem item)
+        public TodoItem AddTodo(TodoItem item)
         {
             _todoContext.TodoItemRepos.Add(item);
-            await _todoContext.Save();
             return item;
         }
 
-        public async Task RemoveTodo(int id)
+        public void RemoveTodo(int id)
         {
             _todoContext.TodoItemRepos.Remove(id);
-            await _todoContext.Save();
         }
 
         public async Task EditTodo(int id, TodoItem item, bool datetime)
@@ -41,7 +39,6 @@ namespace API.Foundation.Services
                 exits.Title = item.Title;
             }
             _todoContext.TodoItemRepos.Edit(exits);
-            await _todoContext.Save();
         }
 
         public async Task<TodoItem> GetItem(int id)
