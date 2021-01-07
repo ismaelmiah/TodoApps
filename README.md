@@ -15,18 +15,15 @@
 If you like this Repo, Please click the :star:
 
 
-## Design Pattern
-  - [Repository Pattern](#Repository Pattern)
-  - [Unit Of Work](#Unit Of Work)
+## Design Pattern Apply
+  - [Repository Pattern](#RepositoryPattern)
+  - [Unit Of Work](#UnitOfWork)
 
 ## Database
   - [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
   - [Cassandra](https://cassandra.apache.org/)
   
-# How To Use
-
-
-## Github README PROFILE CATEGORY
+## How To Use
 
 - Clone this repo or Download as Zip
 - Open Project in Visual Studio Code/ Visual Studio 2019
