@@ -34,7 +34,6 @@ namespace API.DataAccessLayer
             DbSet.Add(entity);
             Save();
             CassandraAdded(entity, entity.Id);
-            Dispose();
         }
 
         private void CassandraAdded(TEntity entity, TKey id)
@@ -78,7 +77,6 @@ namespace API.DataAccessLayer
             DbSet.Remove(entityToDelete);
             Save();
             RemovedCassandra(entityToDelete.Id);
-            Dispose();
         }
 
         private void RemovedCassandra(TKey id)
@@ -105,7 +103,6 @@ namespace API.DataAccessLayer
             DbSet.Attach(entityToUpdate);
             DbContext.Entry(entityToUpdate).State = EntityState.Modified;
             Save();
-            Dispose();
         }
 
         private void CassandraUpdate(TEntity entity)
