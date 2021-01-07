@@ -1,9 +1,8 @@
-﻿using API.DataAccessLayer;
-using API.Foundation.Repositories;
+﻿using API.Foundation.Repositories;
 
 namespace API.Foundation.UnitOfWorks
 {
-    public interface ITodoSqlUnitOfWork : IUnitOfWork
+    public interface ITodoSqlUnitOfWork
     {
         ITodoItemRepos TodoItemRepos { get; set; }
     }
