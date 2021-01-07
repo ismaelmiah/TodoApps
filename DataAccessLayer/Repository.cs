@@ -34,19 +34,14 @@ namespace API.DataAccessLayer
         {
             DbSet.Add(entity);
             Save();
-            var id = entity.Id;
-            CassandraAdded(entity, id);
+            CassandraAdded(entity, entity.Id);
         }
 
         private void CassandraAdded(TEntity entity, TKey id)
         {
             var (title, dateTime) = GenerateCassandraData(entity);
 
-
             var keyspaceName = Options.CassandraOptions.KeyspaceName;
-            var _class = Options.CassandraOptions.Replication.Class;
-            var reflicationFector = Options.CassandraOptions.Replication.replication_factor;
-
 
             var statement = new SimpleStatement($"INSERT INTO {keyspaceName}.todoitem (id, title, datetime) VALUES (?,?,?)",
                 id, title, dateTime);
@@ -59,6 +54,9 @@ namespace API.DataAccessLayer
             }
             catch (InvalidQueryException exception)
             {
+
+                var _class = Options.CassandraOptions.Replication.Class;
+                var reflicationFector = Options.CassandraOptions.Replication.replication_factor;
                 
                 var query = $"CREATE KEYSPACE IF NOT EXISTS {keyspaceName} WITH replication = {{'class': '{_class}', 'replication_factor' : {reflicationFector}}}";
                 _session.Execute(query);
@@ -73,43 +71,58 @@ namespace API.DataAccessLayer
         public void Remove(TKey id)
         {
             var entityToDelete = DbSet.Find(id);
-            if (RemovedCassandra(entityToDelete))
-            {
-                DbSet.Remove(entityToDelete);
-            }
+            DbSet.Remove(entityToDelete);
+            Save();
+            RemovedCassandra(entityToDelete.Id);
         }
-        
-        public void Edit(TEntity entityToUpdate)
+
+        private void RemovedCassandra(TKey id)
         {
-            if (CassandraUpdate(entityToUpdate))
+            var keyspaceName = Options.CassandraOptions.KeyspaceName;
+
+            var statement = new SimpleStatement($"DELETE FROM {keyspaceName}.todoitem where id = ?", id);
+
+            try
             {
-                DbSet.Attach(entityToUpdate);
-                DbContext.Entry(entityToUpdate).State = EntityState.Modified;
+                _session = Cluster.Connect();
+                _session.Execute(statement);
+                _session.Dispose();
+            }
+            catch (InvalidQueryException exception)
+            {
+                Console.WriteLine(exception);
             }
         }
 
-        private bool CassandraUpdate(TEntity entity)
+        public void Edit(TEntity entityToUpdate)
         {
-            _session = Cluster.Connect("tododb");
+            DbSet.Attach(entityToUpdate);
+            DbContext.Entry(entityToUpdate).State = EntityState.Modified;
+            Save();
+            CassandraUpdate(entityToUpdate);
+        }
+
+        private void CassandraUpdate(TEntity entity)
+        {
 
             var properties = entity.GetType().GetProperties();
             var id = int.Parse(properties[0].GetValue(entity).ToString());
             var title = properties[1].GetValue(entity).ToString();
             var date = properties[2].GetValue(entity).ToString();
             var dateTime = ToDateTimeOffset(date);
-
-            var statement = new SimpleStatement("UPDATE todoitems SET title =?, datetime =? WHERE id = ?", title,dateTime,id);
+            
+            var keyspaceName = Options.CassandraOptions.KeyspaceName;
+            
+            var statement = new SimpleStatement($"UPDATE {keyspaceName}.todoitem SET title =?, datetime =? WHERE id = ?", title,dateTime,id);
 
             try
             {
                 _session.Execute(statement);
                 _session.Dispose();
-                return true;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
             }
         }
 
@@ -125,13 +138,17 @@ namespace API.DataAccessLayer
 
         public List<Tuple<int, string, DateTimeOffset>> GetAllByDate(string dateTime)
         {
-            _session = Cluster.Connect("tododb");
+            var keyspaceName = Options.CassandraOptions.KeyspaceName;
+
+            //var statement = new SimpleStatement($"INSERT INTO {keyspaceName}.todoitem (id, title, datetime) VALUES (?,?,?)",
+            //    id, title, dateTime);
+            
             var date = ToDateTimeOffset(dateTime);
-            var statement = new SimpleStatement("SELECT * FROM todoitems where datetime = ? allow filtering", date);
+            var statement = new SimpleStatement($"SELECT * FROM  {keyspaceName}.todoitem  where datetime = ? allow filtering", date);
             var results = _session.Execute(statement);
 
             var tupleList = (from result in results let localdate = result
-                    .GetValue<LocalDate>("datetime").ToString()
+                    .GetValue<DateTimeOffset>("datetime").ToString()
                              select new Tuple<int, string, DateTimeOffset>
                                  (result.GetValue<int>("id"),
                                  result.GetValue<string>("title"),
@@ -152,28 +169,7 @@ namespace API.DataAccessLayer
             var date = properties[2].GetValue(entity).ToString();
             var dateTime = ToDateTimeOffset(date);
 
-
             return (title, dateTime);
-        }
-
-        private bool RemovedCassandra(TEntity entity)
-        {
-            _session = Cluster.Connect("tododb");
-
-            var properties = entity.GetType().GetProperties();
-            var id = int.Parse(properties[0].GetValue(entity).ToString());
-
-            var statement = new SimpleStatement("DELETE FROM todoitems where id = ?", id);
-            try
-            {
-                _session.Execute(statement);
-                _session.Dispose();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
         }
         private Cluster Connect()
         {
