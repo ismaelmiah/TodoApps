@@ -15,9 +15,9 @@ namespace API.DataAccessLayer
             _context.Dispose();
         }
 
-        public async Task Save()
+        public int  Save()
         {
-            await _context.SaveChangesAsync();
+            return _context.SaveChanges();
         }
     }
 }

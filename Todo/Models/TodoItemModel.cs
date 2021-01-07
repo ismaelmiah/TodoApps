@@ -26,9 +26,9 @@ namespace API.Todo.Models
         public string Title { get; set; }
         public DateTime DateTime { get; set; }
 
-        public async Task<TodoItemModel> Add(TodoItemModel model)
+        public TodoItemModel Add(TodoItemModel model)
         {
-            var data = await Services.AddTodo(ModelToEntity(model));
+            var data = Services.AddTodo(ModelToEntity(model));
             return EntityToModel(data);
         }
 

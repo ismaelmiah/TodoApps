@@ -15,17 +15,17 @@ namespace API.Foundation.Services
             _todoContext = todoContext;
         }
 
-        public async Task<TodoItem> AddTodo(TodoItem item)
+        public TodoItem AddTodo(TodoItem item)
         {
             _todoContext.TodoItemRepos.Add(item);
-            await _todoContext.Save();
+            
+            var id = item.Id;
             return item;
         }
 
         public async Task RemoveTodo(int id)
         {
             _todoContext.TodoItemRepos.Remove(id);
-            await _todoContext.Save();
         }
 
         public async Task EditTodo(int id, TodoItem item, bool datetime)
@@ -41,7 +41,6 @@ namespace API.Foundation.Services
                 exits.Title = item.Title;
             }
             _todoContext.TodoItemRepos.Edit(exits);
-            await _todoContext.Save();
         }
 
         public async Task<TodoItem> GetItem(int id)
@@ -56,13 +55,13 @@ namespace API.Foundation.Services
 
         public IList<TodoItem> GetByDate(DateTime filterDateTime)
         {
-            var cassandraList =  _todoContext.TodoItemRepos.GetAllByDate(filterDateTime);
+            var cassandraList =  _todoContext.TodoItemRepos.GetAllByDate(filterDateTime.ToShortDateString());
             var originalData = from x in cassandraList
                 select new TodoItem
                 {
                     Id = x.Item1,
                     Title = x.Item2,
-                    DateTime = x.Item3
+                    DateTime = x.Item3.DateTime
                 };
             return originalData.ToList();
         }

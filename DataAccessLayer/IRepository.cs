@@ -14,6 +14,6 @@ namespace API.DataAccessLayer
         void Edit(TEntity entityToUpdate);
         Task<TEntity> GetById(TKey id);
         Task<IList<TEntity>> GetAll();
-        List<Tuple<int, string, DateTime>> GetAllByDate(DateTime filterDateTime);
+        List<Tuple<int, string, DateTimeOffset>> GetAllByDate(string filterDateTime);
     }
 }

@@ -45,9 +45,9 @@ namespace API.Todo.Controllers
         }
         
         [HttpPost]
-        public async Task<ActionResult<TodoItemModel>> Post(TodoItemModel item)
+        public ActionResult<TodoItemModel> Post(TodoItemModel item)
         {
-            var data = await item.Add(item);
+            var data = item.Add(item);
             return CreatedAtAction(nameof(Get), new {id = data.Id}, data);
         }
         

@@ -5,6 +5,6 @@ namespace API.DataAccessLayer
 {
     public interface IUnitOfWork : IDisposable
     {
-        Task Save();
+        int Save();
     }
 }

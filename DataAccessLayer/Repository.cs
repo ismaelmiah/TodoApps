@@ -3,53 +3,70 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cassandra;
+using Cassandra.Data.Linq;
+using Cassandra.Mapping;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace API.DataAccessLayer
 {
-    public abstract class Repository<TEntity, TKey, TContext> : IRepository<TEntity, TKey, TContext>
+    public abstract class Repository<TEntity, TKey, TContext> : IUnitOfWork, IRepository<TEntity, TKey, TContext>
         where TEntity : class, IEntity<TKey>
         where TContext : DbContext
     {
         protected TContext DbContext;
         protected DbSet<TEntity> DbSet;
         protected Cluster Cluster;
-        protected ISession Session;
-        public Repository(TContext context)
+        protected ISession _session;
+
+        private readonly Cassandra Options;
+
+        public Repository(TContext context, IOptions<Cassandra> options)
         {
             DbContext = context;
             DbSet = DbContext.Set<TEntity>();
-            Cluster = Cluster.Builder().AddContactPoint("127.0.0.1").Build();
+            Options = options.Value;
+            Cluster = Connect();
         }
-
-        //Cluster cluster = Cluster.Builder().AddContactPoint("127.0.0.1").Build();
-        //ISession session = cluster.Connect("demo");
+        
         public void Add(TEntity entity)
         {
-            if (CassandraAdded(entity))
-            {
-                DbSet.Add(entity);
-            }
+            DbSet.Add(entity);
+            Save();
+            var id = entity.Id;
+            CassandraAdded(entity, id);
         }
 
-        private bool CassandraAdded(TEntity entity)
+        private void CassandraAdded(TEntity entity, TKey id)
         {
-            var (title, id, dateTime) = GenerateCassandraData(entity);
+            var (title, dateTime) = GenerateCassandraData(entity);
 
-            var statement = new SimpleStatement("INSERT INTO todoitems (id, title, datetime) VALUES (?,?,?)",
+
+            var keyspaceName = Options.CassandraOptions.KeyspaceName;
+            var _class = Options.CassandraOptions.Replication.Class;
+            var reflicationFector = Options.CassandraOptions.Replication.replication_factor;
+
+
+            var statement = new SimpleStatement($"INSERT INTO {keyspaceName}.todoitem (id, title, datetime) VALUES (?,?,?)",
                 id, title, dateTime);
-
+            
             try
             {
-                Session = Cluster.Connect("tododb");
-                Session.Execute(statement);
-                Session.Dispose();
-                return true;
+                _session = Cluster.Connect();
+                _session.Execute(statement);
+                _session.Dispose();
             }
-            catch (Exception exception)
+            catch (InvalidQueryException exception)
             {
-                Console.WriteLine(exception);
-                return false;
+                
+                var query = $"CREATE KEYSPACE IF NOT EXISTS {keyspaceName} WITH replication = {{'class': '{_class}', 'replication_factor' : {reflicationFector}}}";
+                _session.Execute(query);
+                
+                var entty = new Table<TEntity>(_session, new MappingConfiguration(),tableName: "todoitem", keyspaceName);
+                entty.CreateIfNotExists();
+                
+                _session.Dispose();
             }
         }
 
@@ -73,20 +90,20 @@ namespace API.DataAccessLayer
 
         private bool CassandraUpdate(TEntity entity)
         {
-            Session = Cluster.Connect("tododb");
+            _session = Cluster.Connect("tododb");
 
             var properties = entity.GetType().GetProperties();
             var id = int.Parse(properties[0].GetValue(entity).ToString());
             var title = properties[1].GetValue(entity).ToString();
-            var date = Convert.ToDateTime(properties[2].GetValue(entity).ToString());
-            var dateTime = ToLocalDate(date);
+            var date = properties[2].GetValue(entity).ToString();
+            var dateTime = ToDateTimeOffset(date);
 
             var statement = new SimpleStatement("UPDATE todoitems SET title =?, datetime =? WHERE id = ?", title,dateTime,id);
 
             try
             {
-                Session.Execute(statement);
-                Session.Dispose();
+                _session.Execute(statement);
+                _session.Dispose();
                 return true;
             }
             catch (Exception e)
@@ -106,45 +123,42 @@ namespace API.DataAccessLayer
             return await query.ToListAsync();
         }
 
-        public List<Tuple<int, string, DateTime>> GetAllByDate(DateTime dateTime)
+        public List<Tuple<int, string, DateTimeOffset>> GetAllByDate(string dateTime)
         {
-            Session = Cluster.Connect("tododb");
-            var date = ToLocalDate(dateTime);
+            _session = Cluster.Connect("tododb");
+            var date = ToDateTimeOffset(dateTime);
             var statement = new SimpleStatement("SELECT * FROM todoitems where datetime = ? allow filtering", date);
-            var results = Session.Execute(statement);
+            var results = _session.Execute(statement);
 
             var tupleList = (from result in results let localdate = result
                     .GetValue<LocalDate>("datetime").ToString()
-                             select new Tuple<int, string, DateTime>
+                             select new Tuple<int, string, DateTimeOffset>
                                  (result.GetValue<int>("id"),
                                  result.GetValue<string>("title"),
                                  Convert.ToDateTime(localdate))).ToList();
 
             return tupleList;
         }
-        public static LocalDate ToLocalDate(DateTime dateTime) => new LocalDate(dateTime.Year, dateTime.Month, dateTime.Day);
-
-        private (string Title, int id, LocalDate date) GenerateCassandraData(TEntity entity)
+        public static DateTimeOffset ToDateTimeOffset(string dateTime)
         {
-            Session = Cluster.Connect("tododb");
+            return DateTimeOffset.Parse(dateTime);
+            //return new DateTimeOffset(dateTime.Year, dateTime.Month, dateTime.Day);
+        }
 
+        private (string Title, DateTimeOffset date) GenerateCassandraData(TEntity entity)
+        {
             var properties = entity.GetType().GetProperties();
             var title = properties[1].GetValue(entity).ToString();
-            var date = Convert.ToDateTime(properties[2].GetValue(entity).ToString());
-            var dateTime = ToLocalDate(date);
+            var date = properties[2].GetValue(entity).ToString();
+            var dateTime = ToDateTimeOffset(date);
 
-            var statement = new SimpleStatement("SELECT id FROM todoitems");
 
-            var results = Session.Execute(statement);
-            var id = results.Select(result => result.GetValue<int>("id")).Prepend(0).Max();
-            Session.Dispose();
-            id++;
-            return (title, id, dateTime);
+            return (title, dateTime);
         }
 
         private bool RemovedCassandra(TEntity entity)
         {
-            Session = Cluster.Connect("tododb");
+            _session = Cluster.Connect("tododb");
 
             var properties = entity.GetType().GetProperties();
             var id = int.Parse(properties[0].GetValue(entity).ToString());
@@ -152,8 +166,8 @@ namespace API.DataAccessLayer
             var statement = new SimpleStatement("DELETE FROM todoitems where id = ?", id);
             try
             {
-                Session.Execute(statement);
-                Session.Dispose();
+                _session.Execute(statement);
+                _session.Dispose();
                 return true;
             }
             catch
@@ -161,5 +175,20 @@ namespace API.DataAccessLayer
                 return false;
             }
         }
+        private Cluster Connect()
+        {
+            var nodes = Options.CassandraNodes;
+            
+            var cluster = Cluster.Builder().AddContactPoints(nodes).Build();
+
+            return cluster;
+        }
+
+        public void Dispose()
+        {
+            DbContext.Dispose();
+        }
+
+        public int Save() => DbContext.SaveChanges();
     }
 }

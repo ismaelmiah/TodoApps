@@ -3,7 +3,7 @@ using API.Foundation.Repositories;
 
 namespace API.Foundation.UnitOfWorks
 {
-    public interface ITodoSqlUnitOfWork : IUnitOfWork
+    public interface ITodoSqlUnitOfWork
     {
         ITodoItemRepos TodoItemRepos { get; set; }
     }
